@@ -1,0 +1,16 @@
+Store,Change Type,Comment,Store Len(max|min)
+,,,4|4
+7601,Store MGR,Changing: ''for 10985662,
+7601,Store MGR,Changing: '' for DOUGLAS DOS SANTOS,
+7601,COMM Sales,Changing: '' for 10985343,
+7601,COMM Sales,Changing: '' for ALLERSON ANTUNES DO NASCIMENTO,
+,HIERFLG,The HIERFLG column contains blank values,
+,HIERFLG,The HIERFLG column exceded limit 1 - found: 2,
+,JOINKEY,The JOINKEY column contains blank values,
+,JOINKEY,The JOINKEY column exceded limit 5 - found: 6,
+,HIERFLGDESC,The HIERFLGDESC column contains blank values,
+,HIERFLGDESC,The HIERFLGDESC column exceded limit 5 - found: 6,
+,DIVISION_ID,The DIVISION_ID column contains blank values,
+,DIVISION_ID,The DIVISION_ID column exceded limit 2 - found: 3,
+,REGION_ID,The REGION_ID column contains blank values,
+,REGION_ID,The REGION_ID column exceded limit 2 - found: 3,
