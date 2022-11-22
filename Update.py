@@ -25,6 +25,7 @@ HIER = pd.read_csv(hierpath,index_col=None, header=0, encoding='ISO-8859-9')
 FULLDF = HIER.merge(FULLJCF, left_on='STORE_ID', right_on='STORE_COD')
 FULLDF = FULLDF.apply(lambda x: x.astype(str).str.upper())
 FULLDF = FULLDF.replace('NAN', "''")
+FULLDF['DISTRICT_MGR_EMP_ID_y'] = FULLDF['DISTRICT_MGR_EMP_ID_y'].replace('.0' "''")
 #END OF CREATION OF FILE TO WORKK WITH#
 
 #LOGIC#
@@ -42,11 +43,11 @@ for x in FULLDF['STORE_ID']:
         store = FULLDF.iloc[i]['STORE_ID']
         changeType = 'Store MGR'
         if FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'] == "''":
-            comment = 'Changing: ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'] + 'for ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_y'][:-2]
+            comment = 'Changing: ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'] + ' for ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_y'][:-2]
         elif FULLDF.iloc[i]['STORE_MGR_EMP_ID_y'] == "''":
-            comment = 'Changing: ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'][:-2] + 'for ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_y']
+            comment = 'Changing: ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'][:-2] + ' for ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_y']
         else:
-            comment = 'Changing: ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'][:-2] + 'for ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_y'][:-2] 
+            comment = 'Changing: ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_x'][:-2] + ' for ' + FULLDF.iloc[i]['STORE_MGR_EMP_ID_y'][:-2] 
         
         COMMENTS.at[c, 'Store'] = store
         COMMENTS.at[c, 'Change Type'] = changeType
@@ -94,13 +95,8 @@ for x in FULLDF['STORE_ID']:
     changeType = ''
     comment = ''
     if FULLDF.iloc[i]['HIERFLG'] == '1':
-        if FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'] != FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y']:
-            if FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'] == "''":
-                comment = Comment = 'Changing: ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'] + ' for ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y'][:-2]
-            elif FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y'] == "''":
-                comment = Comment = 'Changing: ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'][:-2] + ' for ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y']
-            else:
-                comment = Comment = 'Changing: ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'][:-2] + ' for ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y'][:-2]
+        if FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'] != FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y'][:-2]:
+            comment = 'Changing: ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_x'] + ' for ' + FULLDF.iloc[i]['DISTRICT_MGR_EMP_ID_y'][:-2]
             store = FULLDF.iloc[i]['STORE_ID']
             changeType = 'DM Change'
             COMMENTS.at[c, 'Store'] = store
@@ -190,7 +186,7 @@ if ("''" in FULLDF['HIERFLG'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 1
-    if max(FULLDF['HIERFLG'].str.len()) > 3:
+    if max(FULLDF['HIERFLG'].str.len()) > 1:
         comment ='The HIERFLG column exceded limit 1 - found: ' + str(max(FULLDF['HIERFLG'].str.len()) - 2)
         changeType = 'HIERFLG'
         ################
@@ -292,7 +288,7 @@ if ("''" in FULLDF['REGION_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 1
-    if max(FULLDF['REGION_ID'].str.len()) > 3:
+    if max(FULLDF['REGION_ID'].str.len()) > 2:
         comment ='The REGION_ID column exceded limit 2 - found: ' + str(max(FULLDF['REGION_ID'].str.len())-2)
         changeType = 'REGION_ID'
         ################
@@ -342,7 +338,7 @@ if ("''" in FULLDF['STORE_NAME_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 8
-    if max(FULLDF['STORE_NAME_x'].str.len()) > 3:
+    if max(FULLDF['STORE_NAME_x'].str.len()) > 24:
         comment ='The STORE_NAME_x column exceded limit 24 - found: ' +  str(max(FULLDF['STORE_NAME_x'].str.len()))
         changeType = 'STORE_NAME_x'
         ################
@@ -367,7 +363,7 @@ if ("''" in FULLDF['STORE_ADDR'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 9
-    if max(FULLDF['STORE_ADDR'].str.len()) > 3:
+    if max(FULLDF['STORE_ADDR'].str.len()) > 66:
         comment ='The STORE_ADDR column exceded limit 66 - found: ' +  str(max(FULLDF['STORE_ADDR'].str.len()))
         changeType = 'STORE_ADDR'
         ################
@@ -392,7 +388,7 @@ if ("''" in FULLDF['CITY_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 10
-    if max(FULLDF['CITY_NAME'].str.len()) > 3:
+    if max(FULLDF['CITY_NAME'].str.len()) > 21:
         comment ='The CITY_NAME column exceded limit 21 - found: ' +  str(max(FULLDF['CITY_NAME'].str.len()))
         changeType = 'CITY_NAME'
         ################
@@ -417,7 +413,7 @@ if ("''" in FULLDF['STATE_CODE'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 11
-    if max(FULLDF['STATE_CODE'].str.len()) > 3:
+    if max(FULLDF['STATE_CODE'].str.len()) > 2:
         comment ='The STATE_CODE column exceded limit 2 - found: ' +  str(max(FULLDF['STATE_CODE'].str.len()))
         changeType = 'STATE_CODE'
         ################
@@ -442,7 +438,7 @@ if ("''" in FULLDF['POSTAL_CODE'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 12
-    if max(FULLDF['POSTAL_CODE'].str.len()) > 3:
+    if max(FULLDF['POSTAL_CODE'].str.len()) > 9:
         comment ='The POSTAL_CODE column exceded limit 9 - found: ' +  str(max(FULLDF['POSTAL_CODE'].str.len()))
         changeType = 'POSTAL_CODE'
         ################
@@ -467,7 +463,7 @@ if ("''" in FULLDF['COUNTY_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 13
-    if max(FULLDF['COUNTY_NAME'].str.len()) > 3:
+    if max(FULLDF['COUNTY_NAME'].str.len()) > 6:
         comment ='The COUNTY_NAME column exceded limit 6 - found: ' +  str(max(FULLDF['COUNTY_NAME'].str.len()))
         changeType = 'COUNTY_NAME'
         ################
@@ -517,7 +513,7 @@ if ("''" in FULLDF['STORE_PHONE_NBR'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 15
-    if max(FULLDF['STORE_PHONE_NBR'].str.len()) > 3:
+    if max(FULLDF['STORE_PHONE_NBR'].str.len()) > 14:
         comment ='The STORE_PHONE_NBR column exceded limit 14 - found: ' +  str(max(FULLDF['STORE_PHONE_NBR'].str.len()))
         changeType = 'STORE_PHONE_NBR'
         ################
@@ -542,7 +538,7 @@ if ("''" in FULLDF['STORE_MGR_EMP_ID_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 16
-    if max(FULLDF['STORE_MGR_EMP_ID_x'].str.len()) > 3:
+    if max(FULLDF['STORE_MGR_EMP_ID_x'].str.len()) > 10:
         comment ='The STORE_MGR_EMP_ID_x column exceded limit 8 - found: ' +  str(max(FULLDF['STORE_MGR_EMP_ID_x'].str.len()))
         changeType = 'STORE_MGR_EMP_ID_x'
         ################
@@ -567,7 +563,7 @@ if ("''" in FULLDF['STORE_MGR_NAME_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 17
-    if max(FULLDF['STORE_MGR_NAME_x'].str.len()) > 3:
+    if max(FULLDF['STORE_MGR_NAME_x'].str.len()) > 40:
         comment ='The STORE_MGR_NAME_x column exceded limit 40 - found: ' +  str(max(FULLDF['STORE_MGR_NAME_x'].str.len()))
         changeType = 'STORE_MGR_NAME_x'
         ################
@@ -592,7 +588,7 @@ if ("''" in FULLDF['COMM_SALES_MGR_EMP_ID_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 18
-    if max(FULLDF['COMM_SALES_MGR_EMP_ID_x'].str.len()) > 3:
+    if max(FULLDF['COMM_SALES_MGR_EMP_ID_x'].str.len()) > 10:
         comment ='The COMM_SALES_MGR_EMP_ID_x column exceded limit 8 - found: ' +  str(max(FULLDF['COMM_SALES_MGR_EMP_ID_x'].str.len()))
         changeType = 'COMM_SALES_MGR_EMP_ID_x'
         ################
@@ -617,7 +613,7 @@ if ("''" in FULLDF['COMM_SALES_MGR_NAME_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 19
-    if max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()) > 3:
+    if max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()) > 43:
         comment ='The COMM_SALES_MGR_NAME_x column exceded limit 43 - found: ' +  str(max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()))
         changeType = 'COMM_SALES_MGR_NAME_x'
         ################
@@ -642,7 +638,7 @@ if ("''" in FULLDF['STORE_EMAIL_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 20
-    if max(FULLDF['STORE_EMAIL_ID'].str.len()) > 3:
+    if max(FULLDF['STORE_EMAIL_ID'].str.len()) > 25:
         comment ='The STORE_EMAIL_ID column exceded limit 25 - found: ' +  str(max(FULLDF['STORE_EMAIL_ID'].str.len()))
         changeType = 'STORE_EMAIL_ID'
         ################
@@ -667,7 +663,7 @@ if ("''" in FULLDF['OPEN_CODE'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 21
-    if max(FULLDF['OPEN_CODE'].str.len()) > 3:
+    if max(FULLDF['OPEN_CODE'].str.len()) > 1:
         comment ='The OPEN_CODE column exceded limit 1 - found: ' +  str(max(FULLDF['OPEN_CODE'].str.len()))
         changeType = 'OPEN_CODE'
         ################
@@ -692,7 +688,7 @@ if ("''" in FULLDF['STORE_OPENED_DATE'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 22
-    if max(FULLDF['STORE_OPENED_DATE'].str.len()) > 3:
+    if max(FULLDF['STORE_OPENED_DATE'].str.len()) > 8:
         comment ='The STORE_OPENED_DATE column exceded limit 8 - found: ' +  str(max(FULLDF['STORE_OPENED_DATE'].str.len()))
         changeType = 'STORE_OPENED_DATE'
         ################
@@ -717,7 +713,7 @@ if ("''" in FULLDF['STORE_OPENED_YYMD'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 23
-    if max(FULLDF['STORE_OPENED_YYMD'].str.len()) > 3:
+    if max(FULLDF['STORE_OPENED_YYMD'].str.len()) > 8:
         comment ='The STORE_OPENED_YYMD column exceded limit 8 - found: ' +  str(max(FULLDF['STORE_OPENED_YYMD'].str.len()))
         changeType = 'STORE_OPENED_YYMD'
         ################
@@ -742,7 +738,7 @@ if ("''" in FULLDF['STORE_OPENED_FISCAL_YEAR'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 24
-    if max(FULLDF['STORE_OPENED_FISCAL_YEAR'].str.len()) > 3:
+    if max(FULLDF['STORE_OPENED_FISCAL_YEAR'].str.len()) > 4:
         comment ='The STORE_OPENED_FISCAL_YEAR column exceded limit 4 - found: ' +  str(max(FULLDF['STORE_OPENED_FISCAL_YEAR'].str.len()))
         changeType = 'STORE_OPENED_FISCAL_YEAR'
         ################
@@ -767,7 +763,7 @@ if ("''" in FULLDF['SAME_STORE_FLAG'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 25
-    if max(FULLDF['SAME_STORE_FLAG'].str.len()) > 3:
+    if max(FULLDF['SAME_STORE_FLAG'].str.len()) > 1:
         comment ='The SAME_STORE_FLAG column exceded limit 1 - found: ' +  str(max(FULLDF['SAME_STORE_FLAG'].str.len()))
         changeType = 'SAME_STORE_FLAG'
         ################
@@ -792,7 +788,7 @@ if ("''" in FULLDF['COMM_SALES_FLAG'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 26
-    if max(FULLDF['COMM_SALES_FLAG'].str.len()) > 3:
+    if max(FULLDF['COMM_SALES_FLAG'].str.len()) > 1:
         comment ='The COMM_SALES_FLAG column exceded limit 1 - found: ' +  str(max(FULLDF['COMM_SALES_FLAG'].str.len()))
         changeType = 'COMM_SALES_FLAG'
         ################
@@ -817,7 +813,7 @@ if ("''" in FULLDF['COMM_SALES_START_DATE'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 27
-    if max(FULLDF['COMM_SALES_START_DATE'].str.len()) > 3:
+    if max(FULLDF['COMM_SALES_START_DATE'].str.len()) > 8:
         comment ='The COMM_SALES_START_DATE column exceded limit 8 - found: ' +  str(max(FULLDF['COMM_SALES_START_DATE'].str.len()))
         changeType = 'COMM_SALES_START_DATE'
         ################
@@ -842,7 +838,7 @@ if ("''" in FULLDF['COMM_SAME_STORE_FLAG'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 28
-    if max(FULLDF['COMM_SAME_STORE_FLAG'].str.len()) > 3:
+    if max(FULLDF['COMM_SAME_STORE_FLAG'].str.len()) > 1:
         comment ='The COMM_SAME_STORE_FLAG column exceded limit 1 - found: ' +  str(max(FULLDF['COMM_SAME_STORE_FLAG'].str.len()))
         changeType = 'COMM_SAME_STORE_FLAG'
         ################
@@ -867,7 +863,7 @@ if ("''" in FULLDF['COMM_STORE_OPENED_FISCAL_YEAR'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 29
-    if max(FULLDF['COMM_STORE_OPENED_FISCAL_YEAR'].str.len()) > 3:
+    if max(FULLDF['COMM_STORE_OPENED_FISCAL_YEAR'].str.len()) > 4:
         comment ='The COMM_STORE_OPENED_FISCAL_YEAR column exceded limit 4 - found: ' +  str(max(FULLDF['COMM_STORE_OPENED_FISCAL_YEAR'].str.len()))
         changeType = 'COMM_STORE_OPENED_FISCAL_YEAR'
         ################
@@ -892,7 +888,7 @@ if ("''" in FULLDF['COMM_PHONE_NBR'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 30
-    if max(FULLDF['COMM_PHONE_NBR'].str.len()) > 3:
+    if max(FULLDF['COMM_PHONE_NBR'].str.len()) > 14:
         comment ='The COMM_PHONE_NBR column exceded limit 14 - found: ' +  str(max(FULLDF['COMM_PHONE_NBR'].str.len()))
         changeType = 'COMM_PHONE_NBR'
         ################
@@ -917,7 +913,7 @@ if ("''" in FULLDF['HUB_FLAG'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 31
-    if max(FULLDF['HUB_FLAG'].str.len()) > 3:
+    if max(FULLDF['HUB_FLAG'].str.len()) > 1:
         comment ='The HUB_FLAG column exceded limit 1 - found: ' +  str(max(FULLDF['HUB_FLAG'].str.len()))
         changeType = 'HUB_FLAG'
         ################
@@ -943,7 +939,7 @@ if ("''" in FULLDF['MEGA_HUB_FLAG'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 32
-    if max(FULLDF['MEGA_HUB_FLAG'].str.len()) > 3:
+    if max(FULLDF['MEGA_HUB_FLAG'].str.len()) > 1:
         comment ='The MEGA_HUB_FLAG column exceded limit 1 - found: ' +  str(max(FULLDF['MEGA_HUB_FLAG'].str.len()))
         changeType = 'MEGA_HUB_FLAG'
         ################
@@ -968,7 +964,7 @@ if ("''" in FULLDF['DIVISION_ID.1'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 33
-    if max(FULLDF['DIVISION_ID.1'].str.len()) > 3:
+    if max(FULLDF['DIVISION_ID.1'].str.len()) > 2:
         comment ='The DIVISION_ID.1 column exceded limit 2 - found: ' +  str(max(FULLDF['DIVISION_ID.1'].str.len()))
         changeType = 'DIVISION_ID.1'
         ################
@@ -993,7 +989,7 @@ if ("''" in FULLDF['DIVISION_VP_EMP_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 35
-    if max(FULLDF['DIVISION_VP_EMP_ID'].str.len()) > 3:
+    if max(FULLDF['DIVISION_VP_EMP_ID'].str.len()) > 8:
         comment ='The DIVISION_VP_EMP_ID column exceded limit 8 - found: ' +  str(max(FULLDF['DIVISION_VP_EMP_ID'].str.len()))
         changeType = 'DIVISION_VP_EMP_ID'
         ################
@@ -1018,7 +1014,7 @@ if ("''" in FULLDF['DIVISION_VP_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 36
-    if max(FULLDF['DIVISION_VP_NAME'].str.len()) > 3:
+    if max(FULLDF['DIVISION_VP_NAME'].str.len()) > 13:
         comment ='The DIVISION_VP_NAME column exceded limit 13 - found: ' +  str(max(FULLDF['DIVISION_VP_NAME'].str.len()))
         changeType = 'DIVISION_VP_NAME'
         ################
@@ -1043,7 +1039,7 @@ if ("''" in FULLDF['DIVISION_VP_EMAIL_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 37
-    if max(FULLDF['DIVISION_VP_EMAIL_ID'].str.len()) > 3:
+    if max(FULLDF['DIVISION_VP_EMAIL_ID'].str.len()) > 26:
         comment ='The DIVISION_VP_EMAIL_ID column exceded limit 26 - found: ' +  str(max(FULLDF['DIVISION_VP_EMAIL_ID'].str.len()))
         changeType = 'DIVISION_VP_EMAIL_ID'
         ################
@@ -1068,7 +1064,7 @@ if ("''" in FULLDF['REGION_ID.1'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 38
-    if max(FULLDF['REGION_ID.1'].str.len()) > 3:
+    if max(FULLDF['REGION_ID.1'].str.len()) > 2:
         comment ='The REGION_ID.1 column exceded limit 2 - found: ' +  str(max(FULLDF['REGION_ID.1'].str.len()))
         changeType = 'REGION_ID.1'
         ################
@@ -1093,7 +1089,7 @@ if ("''" in FULLDF['REGION_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 39
-    if max(FULLDF['REGION_NAME'].str.len()) > 3:
+    if max(FULLDF['REGION_NAME'].str.len()) > 12:
         comment ='The REGION_NAME column exceded limit 12 - found: ' +  str(max(FULLDF['REGION_NAME'].str.len()))
         changeType = 'REGION_NAME'
         ################
@@ -1118,7 +1114,7 @@ if ("''" in FULLDF['REGION_MGR_EMP_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 40
-    if max(FULLDF['REGION_MGR_EMP_ID'].str.len()) > 3:
+    if max(FULLDF['REGION_MGR_EMP_ID'].str.len()) > 8:
         comment ='The REGION_MGR_EMP_ID column exceded limit 8 - found: ' +  str(max(FULLDF['REGION_MGR_EMP_ID'].str.len()))
         changeType = 'REGION_MGR_EMP_ID'
         ################
@@ -1143,7 +1139,7 @@ if ("''" in FULLDF['REGION_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 41
-    if max(FULLDF['REGION_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['REGION_MGR_NAME'].str.len()) > 15:
         comment ='The REGION_MGR_NAME column exceded limit 15 - found: ' +  str(max(FULLDF['REGION_MGR_NAME'].str.len()))
         changeType = 'REGION_MGR_NAME'
         ################
@@ -1168,7 +1164,7 @@ if ("''" in FULLDF['REGION_MGR_EMAIL_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 42
-    if max(FULLDF['REGION_MGR_EMAIL_ID'].str.len()) > 3:
+    if max(FULLDF['REGION_MGR_EMAIL_ID'].str.len()) > 28:
         comment ='The REGION_MGR_EMAIL_ID column exceded limit 28 - found: ' +  str(max(FULLDF['REGION_MGR_EMAIL_ID'].str.len()))
         changeType = 'REGION_MGR_EMAIL_ID'
         ################
@@ -1218,7 +1214,7 @@ if ("''" in FULLDF['DISTRICT_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 44
-    if max(FULLDF['DISTRICT_NAME'].str.len()) > 3:
+    if max(FULLDF['DISTRICT_NAME'].str.len()) > 21:
         comment ='The DISTRICT_NAME column exceded limit 21 - found: ' +  str(max(FULLDF['DISTRICT_NAME'].str.len()))
         changeType = 'DISTRICT_NAME'
         ################
@@ -1228,7 +1224,7 @@ if ("''" in FULLDF['DISTRICT_NAME'].values) == True:
 #END DISTRICT_NAME#
 #DISTRICT_MGR_EMP_ID_x#
 if ("''" in FULLDF['DISTRICT_MGR_EMP_ID_x'].values) == False:
-    if max(FULLDF['DISTRICT_MGR_EMP_ID_x'].str.len()) > 8:
+    if max(FULLDF['DISTRICT_MGR_EMP_ID_x'].str.len()-2) > 8:
         comment ='The DISTRICT_MGR_EMP_ID_x column exceded limit 8 - found: ' +  str(max(FULLDF['DISTRICT_MGR_EMP_ID_x'].str.len()))
         changeType = 'DISTRICT_MGR_EMP_ID_x'
         ################
@@ -1243,7 +1239,7 @@ if ("''" in FULLDF['DISTRICT_MGR_EMP_ID_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 45
-    if max(FULLDF['DISTRICT_MGR_EMP_ID_x'].str.len()) > 3:
+    if max(FULLDF['DISTRICT_MGR_EMP_ID_x'].str.len()-2) > 8:
         comment ='The DISTRICT_MGR_EMP_ID_x column exceded limit 8 - found: ' +  str(max(FULLDF['DISTRICT_MGR_EMP_ID_x'].str.len()))
         changeType = 'DISTRICT_MGR_EMP_ID_x'
         ################
@@ -1268,7 +1264,7 @@ if ("''" in FULLDF['DISTRICT_MGR_NAME_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 46
-    if max(FULLDF['DISTRICT_MGR_NAME_x'].str.len()) > 3:
+    if max(FULLDF['DISTRICT_MGR_NAME_x'].str.len()) > 17:
         comment ='The DISTRICT_MGR_NAME_x column exceded limit 17 - found: ' +  str(max(FULLDF['DISTRICT_MGR_NAME_x'].str.len()))
         changeType = 'DISTRICT_MGR_NAME_x'
         ################
@@ -1293,7 +1289,7 @@ if ("''" in FULLDF['DISTRICT_MGR_EMAIL_ID_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 47
-    if max(FULLDF['DISTRICT_MGR_EMAIL_ID_x'].str.len()) > 3:
+    if max(FULLDF['DISTRICT_MGR_EMAIL_ID_x'].str.len()) > 30:
         comment ='The DISTRICT_MGR_EMAIL_ID_x column exceded limit 30 - found: ' +  str(max(FULLDF['DISTRICT_MGR_EMAIL_ID_x'].str.len()))
         changeType = 'DISTRICT_MGR_EMAIL_ID_x'
         ################
@@ -1318,7 +1314,7 @@ if ("''" in FULLDF['SOP_DIV_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 48
-    if max(FULLDF['SOP_DIV_ID'].str.len()) > 3:
+    if max(FULLDF['SOP_DIV_ID'].str.len()) > 2:
         comment ='The SOP_DIV_ID column exceded limit 2 - found: ' +  str(max(FULLDF['SOP_DIV_ID'].str.len()))
         changeType = 'SOP_DIV_ID'
         ################
@@ -1343,7 +1339,7 @@ if ("''" in FULLDF['SOP_DIV_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 49
-    if max(FULLDF['SOP_DIV_NAME'].str.len()) > 3:
+    if max(FULLDF['SOP_DIV_NAME'].str.len()) > 6:
         comment ='The SOP_DIV_NAME column exceded limit 6 - found: ' +  str(max(FULLDF['SOP_DIV_NAME'].str.len()))
         changeType = 'SOP_DIV_NAME'
         ################
@@ -1353,7 +1349,7 @@ if ("''" in FULLDF['SOP_DIV_NAME'].values) == True:
 #END SOP_DIV_NAME#
 #SOP_DIV_MGR_ID#
 if ("''" in FULLDF['SOP_DIV_MGR_ID'].values) == False:
-    if max(FULLDF['SOP_DIV_MGR_ID'].str.len()) > 8:
+    if max(FULLDF['SOP_DIV_MGR_ID'].str.len()-2) > 8:
         comment ='The SOP_DIV_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['SOP_DIV_MGR_ID'].str.len()))
         changeType = 'SOP_DIV_MGR_ID'
         ################
@@ -1368,7 +1364,7 @@ if ("''" in FULLDF['SOP_DIV_MGR_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 50
-    if max(FULLDF['SOP_DIV_MGR_ID'].str.len()) > 3:
+    if max(FULLDF['SOP_DIV_MGR_ID'].str.len()-2) > 8:
         comment ='The SOP_DIV_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['SOP_DIV_MGR_ID'].str.len()))
         changeType = 'SOP_DIV_MGR_ID'
         ################
@@ -1393,7 +1389,7 @@ if ("''" in FULLDF['SOP_DIV_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 51
-    if max(FULLDF['SOP_DIV_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['SOP_DIV_MGR_NAME'].str.len()) > 13:
         comment ='The SOP_DIV_MGR_NAME column exceded limit 13 - found: ' +  str(max(FULLDF['SOP_DIV_MGR_NAME'].str.len()))
         changeType = 'SOP_DIV_MGR_NAME'
         ################
@@ -1418,7 +1414,7 @@ if ("''" in FULLDF['SOP_REG_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 52
-    if max(FULLDF['SOP_REG_ID'].str.len()) > 3:
+    if max(FULLDF['SOP_REG_ID'].str.len()) > 2:
         comment ='The SOP_REG_ID column exceded limit 2 - found: ' +  str(max(FULLDF['SOP_REG_ID'].str.len()))
         changeType = 'SOP_REG_ID'
         ################
@@ -1443,7 +1439,7 @@ if ("''" in FULLDF['SOP_REG_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 53
-    if max(FULLDF['SOP_REG_NAME'].str.len()) > 3:
+    if max(FULLDF['SOP_REG_NAME'].str.len()) > 12:
         comment ='The SOP_REG_NAME column exceded limit 12 - found: ' +  str(max(FULLDF['SOP_REG_NAME'].str.len()))
         changeType = 'SOP_REG_NAME'
         ################
@@ -1468,7 +1464,7 @@ if ("''" in FULLDF['SOP_REG_MGR_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 54
-    if max(FULLDF['SOP_REG_MGR_ID'].str.len()) > 3:
+    if max(FULLDF['SOP_REG_MGR_ID'].str.len()) > 8:
         comment ='The SOP_REG_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['SOP_REG_MGR_ID'].str.len()))
         changeType = 'SOP_REG_MGR_ID'
         ################
@@ -1493,7 +1489,7 @@ if ("''" in FULLDF['SOP_REG_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 55
-    if max(FULLDF['SOP_REG_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['SOP_REG_MGR_NAME'].str.len()) > 14:
         comment ='The SOP_REG_MGR_NAME column exceded limit 14 - found: ' +  str(max(FULLDF['SOP_REG_MGR_NAME'].str.len()))
         changeType = 'SOP_REG_MGR_NAME'
         ################
@@ -1543,7 +1539,7 @@ if ("''" in FULLDF['SOP_DST_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 57
-    if max(FULLDF['SOP_DST_NAME'].str.len()) > 3:
+    if max(FULLDF['SOP_DST_NAME'].str.len()) > 18:
         comment ='The SOP_DST_NAME column exceded limit 18 - found: ' +  str(max(FULLDF['SOP_DST_NAME'].str.len()))
         changeType = 'SOP_DST_NAME'
         ################
@@ -1568,7 +1564,7 @@ if ("''" in FULLDF['SOP_DST_MGR_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 58
-    if max(FULLDF['SOP_DST_MGR_ID'].str.len()) > 3:
+    if max(FULLDF['SOP_DST_MGR_ID'].str.len()) > 8:
         comment ='The SOP_DST_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['SOP_DST_MGR_ID'].str.len()))
         changeType = 'SOP_DST_MGR_ID'
         ################
@@ -1593,7 +1589,7 @@ if ("''" in FULLDF['SOP_DST_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 59
-    if max(FULLDF['SOP_DST_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['SOP_DST_MGR_NAME'].str.len()) > 17:
         comment ='The SOP_DST_MGR_NAME column exceded limit 17 - found: ' +  str(max(FULLDF['SOP_DST_MGR_NAME'].str.len()))
         changeType = 'SOP_DST_MGR_NAME'
         ################
@@ -1618,7 +1614,7 @@ if ("''" in FULLDF['COM_DIV_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 60
-    if max(FULLDF['COM_DIV_ID'].str.len()) > 3:
+    if max(FULLDF['COM_DIV_ID'].str.len()) > 2:
         comment ='The COM_DIV_ID column exceded limit 2 - found: ' +  str(max(FULLDF['COM_DIV_ID'].str.len()))
         changeType = 'COM_DIV_ID'
         ################
@@ -1643,7 +1639,7 @@ if ("''" in FULLDF['COM_DIV_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 61
-    if max(FULLDF['COM_DIV_NAME'].str.len()) > 3:
+    if max(FULLDF['COM_DIV_NAME'].str.len()) > 6:
         comment ='The COM_DIV_NAME column exceded limit 6 - found: ' +  str(max(FULLDF['COM_DIV_NAME'].str.len()))
         changeType = 'COM_DIV_NAME'
         ################
@@ -1668,7 +1664,7 @@ if ("''" in FULLDF['COM_DIV_MGR_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 62
-    if max(FULLDF['COM_DIV_MGR_ID'].str.len()) > 3:
+    if max(FULLDF['COM_DIV_MGR_ID'].str.len()) > 8:
         comment ='The COM_DIV_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['COM_DIV_MGR_ID'].str.len()))
         changeType = 'COM_DIV_MGR_ID'
         ################
@@ -1693,7 +1689,7 @@ if ("''" in FULLDF['COM_DIV_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 63
-    if max(FULLDF['COM_DIV_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['COM_DIV_MGR_NAME'].str.len()) > 13:
         comment ='The COM_DIV_MGR_NAME column exceded limit 13 - found: ' +  str(max(FULLDF['COM_DIV_MGR_NAME'].str.len()))
         changeType = 'COM_DIV_MGR_NAME'
         ################
@@ -1718,7 +1714,7 @@ if ("''" in FULLDF['COM_REG_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 64
-    if max(FULLDF['COM_REG_ID'].str.len()) > 3:
+    if max(FULLDF['COM_REG_ID'].str.len()) > 2:
         comment ='The COM_REG_ID column exceded limit 2 - found: ' +  str(max(FULLDF['COM_REG_ID'].str.len()))
         changeType = 'COM_REG_ID'
         ################
@@ -1743,7 +1739,7 @@ if ("''" in FULLDF['COM_REG_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 65
-    if max(FULLDF['COM_REG_NAME'].str.len()) > 3:
+    if max(FULLDF['COM_REG_NAME'].str.len()) > 11:
         comment ='The COM_REG_NAME column exceded limit 11 - found: ' +  str(max(FULLDF['COM_REG_NAME'].str.len()))
         changeType = 'COM_REG_NAME'
         ################
@@ -1768,7 +1764,7 @@ if ("''" in FULLDF['COM_REG_MGR_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 66
-    if max(FULLDF['COM_REG_MGR_ID'].str.len()) > 3:
+    if max(FULLDF['COM_REG_MGR_ID'].str.len()) > 8:
         comment ='The COM_REG_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['COM_REG_MGR_ID'].str.len()))
         changeType = 'COM_REG_MGR_ID'
         ################
@@ -1793,7 +1789,7 @@ if ("''" in FULLDF['COM_REG_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 67
-    if max(FULLDF['COM_REG_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['COM_REG_MGR_NAME'].str.len()) > 15:
         comment ='The COM_REG_MGR_NAME column exceded limit 15 - found: ' +  str(max(FULLDF['COM_REG_MGR_NAME'].str.len()))
         changeType = 'COM_REG_MGR_NAME'
         ################
@@ -1843,7 +1839,7 @@ if ("''" in FULLDF['COM_DST_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 69
-    if max(FULLDF['COM_DST_NAME'].str.len()) > 3:
+    if max(FULLDF['COM_DST_NAME'].str.len()) > 21:
         comment ='The COM_DST_NAME column exceded limit 21 - found: ' +  str(max(FULLDF['COM_DST_NAME'].str.len()))
         changeType = 'COM_DST_NAME'
         ################
@@ -1868,7 +1864,7 @@ if ("''" in FULLDF['COM_DST_MGR_ID'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 70
-    if max(FULLDF['COM_DST_MGR_ID'].str.len()) > 3:
+    if max(FULLDF['COM_DST_MGR_ID'].str.len()) > 8:
         comment ='The COM_DST_MGR_ID column exceded limit 8 - found: ' +  str(max(FULLDF['COM_DST_MGR_ID'].str.len()))
         changeType = 'COM_DST_MGR_ID'
         ################
@@ -1893,7 +1889,7 @@ if ("''" in FULLDF['COM_DST_MGR_NAME'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 71
-    if max(FULLDF['COM_DST_MGR_NAME'].str.len()) > 3:
+    if max(FULLDF['COM_DST_MGR_NAME'].str.len()) > 15:
         comment ='The COM_DST_MGR_NAME column exceded limit 15 - found: ' +  str(max(FULLDF['COM_DST_MGR_NAME'].str.len()))
         changeType = 'COM_DST_MGR_NAME'
         ################
@@ -1923,9 +1919,29 @@ FULLDF = FULLDF.replace('Õ', 'O', regex=True)
 FULLDF = FULLDF.replace('À', 'A', regex=True)
 FULLDF = FULLDF.replace('Ç', 'C', regex=True)
 FULLDF = FULLDF.replace("''", '')
+del FULLDF['STORE_COD']
+del FULLDF['STORE_NAME_y']
+del FULLDF['CITY']
+del FULLDF['STORE_OPEN_OR_CLOSE']
+del FULLDF['STORE_MGR_EMP_ID_y']
+del FULLDF['STORE_MGR_NAME_y']
+del FULLDF['DISTRICT_MGR_EMP_ID_y']
+del FULLDF['DISTRICT_MGR_NAME_y']
+del FULLDF['DISTRICT_MGR_EMAIL_ID_y']
+del FULLDF['COMM_SALES_MGR_EMP_ID_y']
+del FULLDF['COMM_SALES_MGR_NAME_y']
+del FULLDF['CR']
+del FULLDF['Loja']
+del FULLDF['DM Ignition']
+del FULLDF['DM']
+del FULLDF['DM E-mail']
+del FULLDF['TSM Ignition']
+del FULLDF['TSM']
+del FULLDF['TSM E-mail']
+del FULLDF['COMM_SALES_STORE_FLAG']
 CND = COMMENTS.drop_duplicates()
-#FULLDF.rename(columns={'STORE_NAME_x':'STORE_NAME', 'STORE_MGR_EMP_ID_x': 'STORE_MGR_EMP_ID', 'STORE_MGR_NAME_x': 'STORE_MGR_NAME', 'COMM_SALES_MGR_EMP_ID_x': 'COMM_SALES_MGR_EMP_ID', 'COMM_SALES_MGR_NAME_x': 'COMM_SALES_MGR_NAME'}, inplace=True)
-#FULLDF.rename(columns={'DISTRICT_MGR_EMP_ID_x': 'DISTRICT_MGR_EMP_ID', 'DISTRICT_MGR_EMAIL_ID_x': 'DISTRICT_MGR_EMAIL_ID'}, inplace=True)
+FULLDF.rename(columns={'STORE_NAME_x':'STORE_NAME', 'STORE_MGR_EMP_ID_x': 'STORE_MGR_EMP_ID', 'STORE_MGR_NAME_x': 'STORE_MGR_NAME', 'COMM_SALES_MGR_EMP_ID_x': 'COMM_SALES_MGR_EMP_ID', 'COMM_SALES_MGR_NAME_x': 'COMM_SALES_MGR_NAME'}, inplace=True)
+FULLDF.rename(columns={'DISTRICT_MGR_EMP_ID_x': 'DISTRICT_MGR_EMP_ID', 'DISTRICT_MGR_EMAIL_ID_x': 'DISTRICT_MGR_EMAIL_ID', 'DIVISION_ID.1': 'DIVISION_ID', 'REGION_ID.1': 'REGION_ID', 'DISTRICT_ID.1': 'DISTRICT_ID', 'DISTRICT_MGR_NAME_x': 'DISTRICT_MGR_NAME'}, inplace=True)
 
 #END PREPARING FINAL FILES TO SAVE#
 
@@ -1933,4 +1949,5 @@ CND = COMMENTS.drop_duplicates()
 final_path = "C:\\Users\\dsegovia\\OneDrive - AutoZone Parts, Inc\\Documents\\Hierarchy tool"
 CND.to_csv(final_path + "\\Comments.csv", index=False)
 FULLDF.to_csv(final_path + "\\ff_bsto_store_hierarchy_detail.csv", index=False, encoding='ISO-8859-9')
+#FULLJCF.to_csv(final_path + "\\jobcodefile.csv", index=False)
 print("process ended")
