@@ -26,6 +26,8 @@ FULLDF = HIER.merge(FULLJCF, left_on='STORE_ID', right_on='STORE_COD')
 FULLDF = FULLDF.apply(lambda x: x.astype(str).str.upper())
 FULLDF = FULLDF.replace('NAN', "''")
 FULLDF['DISTRICT_MGR_EMP_ID_y'] = FULLDF['DISTRICT_MGR_EMP_ID_y'].replace('.0' "''")
+FULLDF['STORE_OPEN_OR_CLOSE'] = FULLDF['STORE_OPEN_OR_CLOSE'].replace('ABERTA', 'O', regex=True)
+FULLDF['STORE_OPEN_OR_CLOSE'] = FULLDF['STORE_OPEN_OR_CLOSE'].replace('FECHADA', 'R', regex=True)
 #END OF CREATION OF FILE TO WORKK WITH#
 
 #LOGIC#
@@ -88,6 +90,7 @@ FULLDF['COMM_SALES_MGR_NAME_x'].mask(FULLDF['COMM_SALES_MGR_NAME_x'] != FULLDF['
 #END THE CHANGE VALUES BLOCK#
 # END OF LOGIC FOR CHANGES IN STORE AND COMM MANAGERS#
 
+
 #LOGIC FOR DM AND TSM UPDATE#
 i = 0
 for x in FULLDF['STORE_ID']:
@@ -146,6 +149,24 @@ FULLDF['DISTRICT_MGR_NAME_x'].mask(FULLDF['HIERFLG'] == '2', FULLDF['TSM'], inpl
 #END CHANGE CELL VALUES#
 #END OF LOGIC FOR DM AND TSM UPDATE#
 
+
+i = 0
+for x in FULLDF['STORE_ID']:
+    if FULLDF.iloc[i]['OPEN_CODE'] != FULLDF.iloc[i]['STORE_OPEN_OR_CLOSE']:
+        c += 1
+        comment = 'Changing Open code from: ' + FULLDF.iloc[i]['OPEN_CODE'] + 'to ' + FULLDF.iloc[i]['STORE_OPEN_OR_CLOSE']
+        store = FULLDF.iloc[i]['STORE_ID']
+        changeType = 'Open Code'
+
+        COMMENTS.at[c, 'Store'] = store
+        COMMENTS.at[c, 'Change Type'] = changeType
+        COMMENTS.at[c, 'Comment'] = comment
+
+    i += 1
+
+FULLDF['OPEN_CODE'].mask(FULLDF['OPEN_CODE'] != FULLDF['STORE_OPEN_OR_CLOSE'], FULLDF['STORE_OPEN_OR_CLOSE'], inplace=True)
+
+
 #STORE OPEN DATE LOGIC#
 i = 0
 
@@ -154,10 +175,10 @@ for x in FULLDF['STORE_ID']:
     datetimeobject = datetime.strptime(stored, '%Y%m%d')
     NDays = currD - datetimeobject
 
-    if NDays.days >= 730:
+    if NDays.days >= 365:
         FULLDF.at[i, 'SAME_STORE_FLAG']='S'
         #print('Mayor a dos años' + ' : ' + str(NDays.days))
-    elif NDays.days <= 730 and NDays.days >= 0:
+    elif NDays.days <= 365 and NDays.days >= 0:
         FULLDF.at[i, 'SAME_STORE_FLAG']='N'
         #print('Menor a dos años' + ' : ' + str(NDays.days))
     else: 
@@ -598,8 +619,8 @@ if ("''" in FULLDF['COMM_SALES_MGR_EMP_ID_x'].values) == True:
 #END COMM_SALES_MGR_EMP_ID_x#
 #COMM_SALES_MGR_NAME_x#
 if ("''" in FULLDF['COMM_SALES_MGR_NAME_x'].values) == False:
-    if max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()) > 43:
-        comment ='The COMM_SALES_MGR_NAME_x column exceded limit 43 - found: ' +  str(max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()))
+    if max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()) > 40:
+        comment ='The COMM_SALES_MGR_NAME_x column exceded limit 40 - found: ' +  str(max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()))
         changeType = 'COMM_SALES_MGR_NAME_x'
         ################
         COMMENTS.at[c, 'Change Type'] = changeType
@@ -613,8 +634,8 @@ if ("''" in FULLDF['COMM_SALES_MGR_NAME_x'].values) == True:
     COMMENTS.at[c, 'Change Type'] = changeType
     COMMENTS.at[c, 'Comment'] = comment
     c += 19
-    if max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()) > 43:
-        comment ='The COMM_SALES_MGR_NAME_x column exceded limit 43 - found: ' +  str(max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()))
+    if max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()) > 40:
+        comment ='The COMM_SALES_MGR_NAME_x column exceded limit 40 - found: ' +  str(max(FULLDF['COMM_SALES_MGR_NAME_x'].str.len()))
         changeType = 'COMM_SALES_MGR_NAME_x'
         ################
         COMMENTS.at[c, 'Change Type'] = changeType
@@ -1919,6 +1940,7 @@ FULLDF = FULLDF.replace('Õ', 'O', regex=True)
 FULLDF = FULLDF.replace('À', 'A', regex=True)
 FULLDF = FULLDF.replace('Ç', 'C', regex=True)
 FULLDF = FULLDF.replace("''", '')
+FULLDF = FULL
 del FULLDF['STORE_COD']
 del FULLDF['STORE_NAME_y']
 del FULLDF['CITY']
@@ -1949,5 +1971,5 @@ FULLDF.rename(columns={'DISTRICT_MGR_EMP_ID_x': 'DISTRICT_MGR_EMP_ID', 'DISTRICT
 final_path = "C:\\Users\\dsegovia\\OneDrive - AutoZone Parts, Inc\\Documents\\Hierarchy tool"
 CND.to_csv(final_path + "\\Comments.csv", index=False)
 FULLDF.to_csv(final_path + "\\ff_bsto_store_hierarchy_detail.csv", index=False, encoding='ISO-8859-9')
-#FULLJCF.to_csv(final_path + "\\jobcodefile.csv", index=False)
+FULLJCF.to_csv(final_path + "\\jobcodefile.csv", index=False)
 print("process ended")
